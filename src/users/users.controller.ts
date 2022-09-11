@@ -1,6 +1,5 @@
 import {
   Body,
-  // ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,31 +9,62 @@ import {
   Post,
   Query,
   Session,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
 import { UsersService } from './users.service';
 
 @Controller('auth')
 @Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
   ) {}
+
+  @Get('/color/:color')
+  setSession(@Param('color') color: string, @Session() session) {
+    session.color = color;
+  }
+
+  @Get('/session')
+  getSession(@Session() session) {
+    return session.color;
+  }
+
   @Post('/signup')
-  async createUser(@Body() body: CreateUserDto, @Session() session) {
+  async createUser(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signup(body.email, body.password);
     session.userId = user.id;
     return user;
   }
+
   @Post('/signin')
-  async loginUser(@Body() body: CreateUserDto, @Session() session) {
+  async loginUser(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signin(body.email, body.password);
     session.userId = user.id;
+    return user;
+  }
+
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
+  }
+
+  // @Get('/whoami')
+  // async whoami(@Session() session: any) {
+  //   return await this.usersService.findOne(session.userId);
+  // }
+
+  @Get('/whoami')
+  async whoami(@CurrentUser() user) {
     return user;
   }
 
@@ -61,15 +91,5 @@ export class UsersController {
   @Patch('/:id')
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.usersService.update(+id, body);
-  }
-
-  @Get('/color/:color')
-  setSession(@Param('color') color: string, @Session() session) {
-    session.color = color;
-  }
-
-  @Get('/session')
-  getSession(@Session() session) {
-    return session.color;
   }
 }
