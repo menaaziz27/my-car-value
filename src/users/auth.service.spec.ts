@@ -54,30 +54,16 @@ describe('AuthService', () => {
   });
 
   it('throws an error if user signs up with email that is in use ', async () => {
-    // modifying the find method for this particular test only to make sure that an error will be thrown
-    // fakeUsersService.find = () =>
-    //   Promise.resolve([
-    //     { id: 1, email: 'anything@gmail.com', password: 'asdfs' } as User,
-    //   ]);
-
     await service.signup('test@test.com', 'asdfasdd');
     await expect(
       service.signup('test@test.com', 'asdfs'),
     ).rejects.toBeInstanceOf(BadRequestException);
-
-    // another way to test
-    // await expect(service.signup('test@test.com', 'asdf')).rejects.toThrow(
-    //   BadRequestException,
-    //   );
   });
 
   it('throws an error if signin is called with an unused email', async () => {
     await expect(
       service.signin('email@email.com', 'asdf'),
     ).rejects.toBeInstanceOf(BadRequestException);
-    // await expect(service.signin('test@test.com', 'asdf')).rejects.toThrow(
-    //   BadRequestException,
-    // );
   });
 
   it('throws if invalid passowrd is provided', async () => {
@@ -90,21 +76,9 @@ describe('AuthService', () => {
   it('it signin the user if the credentials are valid', async () => {
     await service.signup('email@email.com', 'asdf');
     await expect(service.signin('email@email.com', 'asdf')).toBeDefined();
-    // await expect(service.signin('test@test.com', 'asdf')).rejects.toThrow(
-    //   BadRequestException,
-    // );
   });
 
   it('it returns a user if a valid passowrd is provided', async () => {
-    // fakeUsersService.find = () =>
-    //   Promise.resolve([
-    //     {
-    //       email: 'test@test.com',
-    //       password:
-    //         '8f7ee3627f5be2a0.b3bb76a4e16224de2e987ff7bea01197b76f91ec1a3ad1be1f3ca5e41a61fe3f',
-    //     } as User,
-    //   ]);
-
     const createdUser = await service.signup('any@any.com', 'mypassword');
     const user = await service.signin('any@any.com', 'mypassword');
     expect(user).toBeDefined();
