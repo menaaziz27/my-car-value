@@ -11,8 +11,8 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { AuthGuard } from '../guards/auth.guard';
+import { Serialize } from '../interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -61,6 +61,11 @@ export class UsersController {
   // async whoami(@Session() session: any) {
   //   return await this.usersService.findOne(session.userId);
   // }
+
+  @Get()
+  findAllUsers(@Query('email') email: string) {
+    return this.usersService.find(email);
+  }
 
   @Get('/whoami')
   @UseGuards(AuthGuard)
