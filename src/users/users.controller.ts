@@ -18,6 +18,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { User } from './user.entity';
 import { UsersService } from './users.service';
 
 @Controller('auth')
@@ -69,7 +70,7 @@ export class UsersController {
 
   @Get('/whoami')
   @UseGuards(AuthGuard)
-  async whoami(@CurrentUser() user) {
+  async whoami(@CurrentUser() user: User) {
     return user;
   }
 
