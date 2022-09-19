@@ -6,11 +6,11 @@ const cookieSession = require('cookie-session');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(
-    cookieSession({
-      keys: ['ej1289ej120912u31'],
-    }),
-  );
+  // app.use(
+  //   cookieSession({
+  //     keys: ['ej1289ej120912u31'],
+  //   }),
+  // );
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(3000);
 }
